@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "666088846137",
+    "project_id": "proyek-uas-pakfuad",
+    "storage_bucket": "proyek-uas-pakfuad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666088846137:android:682927003ef1f1b4bdeee8",
+        "android_client_info": {
+          "package_name": "com.example.proyek_uas_pakfuad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7SWIuWqvh_IdLoFKnvC5nGQ1u0k0naBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
