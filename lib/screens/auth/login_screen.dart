@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   bool isLoading = false;
+  bool isPasswordHidden = true; // 🔥 PINDAH KE SINI
 
   Future<void> login() async {
     setState(() {
@@ -21,26 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      UserCredential user = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          );
-
-      var data = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.user!.uid)
-          .get();
-
-      String role = data['role'];
-
-      if (!mounted) return;
-
-      if (role == 'admin') {
-        Navigator.pushReplacementNamed(context, '/admin');
-      } else {
-        Navigator.pushReplacementNamed(context, '/user');
-      }
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -65,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
 
               const Text(
-                "Login Inventaris",
+                "Login Stokly",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
@@ -74,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // EMAIL
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(),
                 ),
@@ -85,10 +70,22 @@ class _LoginScreenState extends State<LoginScreen> {
               // PASSWORD
               TextField(
                 controller: passwordController,
-                obscureText: true,
+                obscureText: isPasswordHidden,
                 decoration: InputDecoration(
                   labelText: "Password",
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordHidden
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordHidden = !isPasswordHidden;
+                      });
+                    },
+                  ),
                 ),
               ),
 
@@ -104,9 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       : const Text("Login"),
                 ),
               ),
+
               const SizedBox(height: 10),
 
-              // 🔥 TAMBAHKAN DI SINI
+              // REGISTER
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/register');

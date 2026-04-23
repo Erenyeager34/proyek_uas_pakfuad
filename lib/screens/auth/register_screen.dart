@@ -13,8 +13,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  String selectedRole = 'user'; // default user
   bool isLoading = false;
+  bool isPasswordHidden = true;
 
   Future<void> register() async {
     setState(() {
@@ -33,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.user!.uid)
-          .set({"email": emailController.text.trim(), "role": selectedRole});
+          .set({"email": emailController.text.trim()});
 
       if (!mounted) return;
 
@@ -85,26 +85,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
 
             const SizedBox(height: 15),
-
-            // ROLE DROPDOWN
-            DropdownButtonFormField<String>(
-              value: selectedRole,
-              items: const [
-                DropdownMenuItem(value: 'admin', child: Text("Admin")),
-                DropdownMenuItem(value: 'user', child: Text("User")),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  selectedRole = value!;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: "Pilih Role",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
 
             // BUTTON
             SizedBox(
