@@ -23,25 +23,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       // 🔐 Register ke Firebase Auth
-      UserCredential user = await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
             email: emailController.text.trim(),
             password: passwordController.text.trim(),
           );
 
-      // 💾 Simpan ke Firestore
+      // simpan ke firestore
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(user.user!.uid)
-          .set({"email": emailController.text.trim()});
-
+          .doc(userCredential.user!.uid)
+          .set({
+            'email': emailController.text.trim(),
+            'role': 'user', // 🔥 default user
+          });
       if (!mounted) return;
+
+      // 🔥 LANGSUNG KE DASHBOARD USER
+      Navigator.pushNamedAndRemoveUntil(context, '/user', (route) => false);
 
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Register berhasil")));
-
-      Navigator.pop(context); // kembali ke login
     } catch (e) {
       if (!mounted) return;
 
@@ -77,10 +80,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // PASSWORD
             TextField(
               controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: isPasswordHidden,
+              decoration: InputDecoration(
                 labelText: "Password",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isPasswordHidden = !isPasswordHidden;
+                    });
+                  },
+                ),
               ),
             ),
 

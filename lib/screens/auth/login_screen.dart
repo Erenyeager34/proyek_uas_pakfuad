@@ -22,12 +22,46 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+
+      var docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid);
+
+      var data = await docRef.get();
+
+      Map<String, dynamic>? userData = data.data();
+
+      // 🔥 AUTO FIX kalau data belum ada / belum ada role
+      if (userData == null || !userData.containsKey('role')) {
+        await docRef.set({
+          'email': userCredential.user!.email,
+          'role': 'user', // default aman
+        });
+
+        userData = {'role': 'user'};
+      }
+
+      String role = userData['role'];
+
+      // 🔍 DEBUG (biar kamu bisa cek di console)
+      print("UID: ${userCredential.user!.uid}");
+      print("ROLE: $role");
+
+      if (!mounted) return;
+
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin');
+      } else {
+        Navigator.pushReplacementNamed(context, '/user');
+      }
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Login gagal: ${e.toString()}")));
